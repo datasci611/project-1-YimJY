@@ -1,0 +1,100 @@
+---
+title: "Project1"
+author: "Joo Young Yim"
+date: "September 24, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+```
+
+# 1. InsectSprays
+
+```{r}
+data("InsectSprays")
+ti <- as_tibble(InsectSprays)
+
+average <- ti %>%
+  mutate(meanall = mean(count), na.rm = TRUE)
+
+ti %>%
+  group_by(spray) %>%
+  summarise(meancount = mean(count), na.rm = TRUE) %>%
+ggplot(mapping = aes(x = spray, y = meancount)) +
+  geom_col() +
+  geom_hline(yintercept = 9.5, color = "red", linetype = "dashed") +
+  annotate("text", label = "Overall mean", x = 4, y = 10, color = "red") +
+  xlab("Types of spray") +
+  ylab("Average number of insects")
+```
+
+This figure was derived from the "InsectSprays" data set in R.It is the counts of insects in agricultural experimental units treated with different insecticides. The average of overall counts is 9.5. There is a distinct difference between A, B, F types and C, D, E types. The worst spray was F with a mean of 16.7 insects, and the best spray was C with a mean of 2.08 insects. In the future, it would be interesting to see the effect of sprays on different types of insects.
+
+
+
+# 2. ToothGrowth
+
+```{r}
+data(ToothGrowth)
+tt <- as_tibble(ToothGrowth)
+
+tt %>%
+ggplot(mapping = aes(x = as.factor(dose), y = len, shape = supp)) +
+  geom_boxplot() +
+  facet_grid(.~supp) +
+  geom_jitter(width = 0.1) +
+  labs(x = "Dose(mg/day)", y = "Length of odontoblasts", shape = "Supplement")
+```
+
+This figure was derived from the "ToothGrowth" data set in R. Its response is the length of odontoblasts(cells responsible for tooth growth). Each animal received one of three dose levels of vitamin C(0.5, 1, 2mg/day) by one of two delivery methods, orange juice(OJ) or vitamin C(VC). Both groups showed increasing effect on length according to increasing dosage. The orange juice had stronger effect in lower doses(0.5 and 1 mg/day) than vitamin C. But at 2mg/day dose, both exhibited similar result.  
+
+
+
+# 3. Orange
+
+```{r}
+data(Orange)
+to <- as_tibble(Orange)
+
+to %>%
+ggplot(mapping = aes(x = circumference, y = age)) +
+  geom_line(aes(color = Tree), show.legend = FALSE) +
+  facet_grid(Tree~.) +
+  labs(x = "Circumference(mm)", y = "Age(days)")
+```
+
+This figure was derived from the "Orange" data set in R. This data set contains information on the growth of orange trees based on their age and circumference. The result shows that Tree 4 has reached the largest circumference at the age of 1,600 days among all 5 trees, while Tree 3 had the smallest. 
+
+
+
+# 4. UCBAdmissions
+
+```{r}
+data("UCBAdmissions")
+tu <- as_tibble(UCBAdmissions)
+
+overall <- tu %>%
+  group_by(Gender, Admit) %>%
+  mutate(nadm = sum(n)) %>%
+  ungroup() %>%
+  group_by(Gender) %>%
+  mutate(ntot = sum(n)) %>%
+  filter(Admit == "Admitted") %>%
+  mutate(prop = nadm/ntot) 
+
+tu %>% 
+  group_by(Dept, Gender, Admit) %>%
+  mutate(nadm = sum(n)) %>%
+  ungroup() %>%
+  group_by(Dept, Gender) %>%
+  mutate(ntot = sum(n)) %>%
+  filter(Admit == "Admitted") %>%
+  mutate(prop = nadm/ntot) %>%
+ggplot(mapping = aes(x = Gender, y = prop)) +
+  geom_col(show.legend = FALSE) +
+  facet_grid(.~Dept) +
+  labs(y = "Acceptance rate", x = NULL)
+```
+
+This figure was derived from the "UCBAdmissions" data set in R. This data set is aggregate data on applicants to graduate school at UC Berkeley for the six largest departments in 1973 classified by admission and sex. Overall, the acceptance rate for men is about 15% higher than women. However, if we look at per department data, there are more departments with higher female acceptance rate (departments A, B, D, F) than male (departments C, E). The acceptance rate for female greatly outnumbers in department A.   
